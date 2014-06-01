@@ -79,6 +79,7 @@ body{
     border: black 1px solid;
     background-color: #f4f4f4;
     display: table-cell;
+    height: 212px;
 }
 
 
@@ -225,7 +226,16 @@ iframe[seamless]{
 .flip .card.flipped {
     -webkit-transform: rotatey(-180deg);
 }
+.flip .card2.flipped {
+    -webkit-transform: rotatey(-180deg);
+}
 .flip .card {
+    width: 500px;
+    height: 500px;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transition: 0.5s;
+}
+.flip .card2 {
     width: 500px;
     height: 500px;
     -webkit-transform-style: preserve-3d;
@@ -238,10 +248,25 @@ iframe[seamless]{
     -webkit-backface-visibility: hidden ;
     z-index: 5;
 }
+.flip .card2 .face {
+    width: 500px;
+    height: 500px;
+    position: absolute;
+    -webkit-backface-visibility: hidden ;
+    z-index: 5;
+}
 .flip .card .front {
     z-index: 1;
 }
+.flip .card2 .front {
+    z-index: 1;
+}
 .flip .card .back {
+    -webkit-transform: rotatey(-180deg);
+    width: 1000px;
+    left: -500px;
+}
+.flip .card2 .back {
     -webkit-transform: rotatey(-180deg);
     width: 1000px;
     left: -500px;
@@ -263,4 +288,17 @@ iframe[seamless]{
     width: 100%;
     text-align: center;
     color: black;
+}
+
+@-webkit-keyframes wiggle {
+    from {-webkit-transform: rotateZ(2deg);}
+    50% {-webkit-transform: rotateZ(-2deg);}
+    to {-webkit-transform: rotateZ(2deg);}
+}
+
+.program_icon.wiggle {
+    -webkit-animation-name: wiggle;
+    -webkit-animation-duration: .4s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease;
 }
