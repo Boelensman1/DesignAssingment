@@ -6,14 +6,41 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Thermostaat</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+        <script src="js/libs/jquery/jquery.js" type="text/javascript"></script>
+        <script src="js/libs/quickfit/quickfit.js" type="text/javascript"></script>
         <link href="css/index.css" rel="stylesheet" type="text/css"/>
+        <script src="js/index.js" type="text/javascript"></script>
+        <script src="js/index2.js" type="text/javascript"></script>
+        <link href="css/index2.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <div id="body_container">
-            <iframe src="interface.html" seamless id="iframe_interace"></iframe>
+        <div id="wrapper" class="dynamicheight">  
+            <div id="currentTempContainer" class="dynamicheight">
+                <div id="currentTempBackground" class="dynamicheight">
+                    <div id="currentTemp" class="dynamicheight">
+                        <div id="currentTempText"><span></span></div>
+                    </div>
+                </div>
+            </div>
+            <div id="targetTempContainer" class="dynamicheight">
+                <div id="upArrowContainer" class="dynamicheight">
+                    <img id="upArrow" class="dynamicheight" src="img/uparrow.svg">
+                </div>
+                <div id="targetTemp" class="dynamicheight">
+                    <div id="targetTempText"><span></span></div>
+                </div>
+                <div id="downArrowContainer" class="dynamicheight">
+                    <img id="downArrow" class="dynamicheight" src="img/downarrow.svg">
+                </div>
+            </div>
+            <div id="switchListContainer">
+            </div>
+            <div id="weekButtonContainer">
+                <a href="klok2.html" id="weekScheduleButton">Week schedule</a>
+            </div>
         </div>
     </body>
 </html>
