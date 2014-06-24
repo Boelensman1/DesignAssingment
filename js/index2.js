@@ -95,7 +95,7 @@ function fake_temp(timeout)
         set_currenttemp(currenttemp + 1);
     }
 
-    setTimeout('fake_temp()', timeout);
+    setTimeout('fake_temp(' + timeout + ')', timeout);
 }
 
 function format_date(date)
