@@ -12,6 +12,7 @@ body{
     width:320px;
     height:320px;
     /* left: 10px; */
+    opacity: 0.4;
 }
 #rotationSliderContainer { 
     position: relative;
@@ -43,4 +44,14 @@ body{
     -webkit-user-select: none; 
     -o-user-select: none;
     z-index: 2;
+}
+
+#clock_background
+{
+    position: absolute;
+    width:320px;
+    height:320px;
+    background-size: 100%;
+    background-image:url('../img/faces.png');
+    top: 36px;
 }
