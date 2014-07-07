@@ -55,3 +55,10 @@ body{
     background-image:url('../img/faces.png');
     top: 36px;
 }
+
+#add_slider
+{
+    width:40px;
+    height:20px;
+    background-color:#a6a6a6;
+}
