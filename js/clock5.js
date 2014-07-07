@@ -13,10 +13,13 @@ $(function() {
     document.ontouchstart = function(e) {
         e.preventDefault();
     }
+    $('#add_slider').click(add_slider_click);
+    $('#add_slider').on({'touchend': add_slider_click});
 
     $('body').on({'touchmove': touchmove_func});
     $('body').on({'mousemove': touchmove_func});
     $('#rotationSliderContainer').click(delete_slider);
+    $('#rotationSliderContainer').on({'touchend': delete_slider});
     var move = false
     var moveid = 0;
     var moveobj;
@@ -189,7 +192,7 @@ $(function() {
         $('.rotationSlider').on({'touchend': touchend_func});
         $('.rotationSlider').on({'mousedown': touchend_func});
     }
-    $("#add_slider").click(function() {
+    function add_slider_click(e) {
         var maxdistance = 0;
         var prev_degree = 0;
         var new_degree1, new_degree2;
@@ -223,7 +226,7 @@ $(function() {
         add_slider(new_degree1);
         add_slider(new_degree2);
         rotate_pie(degrees_slider);
-    });
+    }
     function delete_slider(e)
     {
         if (timeout == 0 && move == false)
