@@ -24,8 +24,8 @@ $(function() {
     var sliderWidth = 50;
     var sliderHeight = sliderWidth;
     var radius = $container.width() / 2;
-    add_slider(45);
     add_slider(360);
+    add_slider(45);
     function touchstart_func(e)
     {
         if (timeout == 0)
@@ -46,18 +46,25 @@ $(function() {
                 move = true;
                 moveobj = this;
                 moveid = $(moveobj).attr('id').substr(15);
-                $(this).css({background: '#FFFFFF'});
-                prev_degree_sliders = new Array();
-                for (i = 1; i < (sliders + 1); i++) {
-                    if (i != moveid)
-                    {
-                        prev_degree_sliders.push(degreesbyid[i]);
-                        console.log(degreesbyid[i]);
+                if (moveid !== '1')
+                {
+                    $(this).css({background: '#FFFFFF'});
+                    prev_degree_sliders = new Array();
+                    for (i = 1; i < (sliders + 1); i++) {
+                        if (i != moveid)
+                        {
+                            prev_degree_sliders.push(degreesbyid[i]);
+                            console.log(degreesbyid[i]);
+                        }
+                        else
+                        {
+                            newdegree = degreesbyid[i];
+                        }
                     }
-                    else
-                    {
-                        newdegree = degreesbyid[i];
-                    }
+                }
+                else
+                {
+                    move = false;
                 }
             }
         }
@@ -252,8 +259,7 @@ $(function() {
             }
             else
             {
-                var r = confirm('sure you want to delete ' + deg1 + '-' + deg2 + '?');
-                //r = false;
+                var r = confirm('sure you want to delete ' + to_time(deg1) + '-' + to_time(deg2) + '?');
                 if (r == true) {
 
                     console.log('---');
