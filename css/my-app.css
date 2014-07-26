@@ -41,6 +41,7 @@ i.tabbar-demo-icon-4 {
     text-align: center;
     line-height: 110px;
     /* float: left; */
+    letter-spacing: -4px;
 }
 #currentTempBackground{
     border-radius: 50%;
@@ -62,7 +63,7 @@ i.tabbar-demo-icon-4 {
 
 #temps{
     margin-top: 20px;
-    margin-bottom: 0px;
+    margin-bottom: 15px;
 }
 
 .targetTempArrows
@@ -107,6 +108,13 @@ i.icon.icon-sun {
     background-image: url("../img/sun.svg");
 }
 
+i.icon.icon-manual {
+    width: 29px;
+    height: 29px;
+    background-image: url("../img/manual.svg");
+    background-size: 40%;
+}
+
 #changes
 {
     height: 187px;
@@ -117,17 +125,77 @@ i.icon.icon-sun {
 #currentTempDeg
 {
     float:right;
-    top: -85px;
-    left: -17px;
+    top: 23px;
+    left: 88px;
+    position: absolute;
+    font-size: 15px;
+    text-align: center;
+}
+#currentTempSmall
+{
+    float:right;
+    top: 58px;
+    left: 89px;
+    position: absolute;
+    font-size: 18px;
+    text-align: center;
+}
+#targetTempSmall
+{
+    float:right;
+    top: -20px;
+    left: 8px;
     position: relative;
     font-size: 15px;
+    text-align: center;
 }
 
 #targetTempDeg
 {
     float:right;
     top: -40px;
-    left: 2px;
+    left: 10px;
     position: relative;
     font-size: 13px;
+}
+
+#debug_settime
+{
+    display:inline;
+}
+
+.button_disabled
+{
+    color: #939398 !important;
+}
+
+.switch_active
+{
+    background-color:#4cd964;
+}
+.switches_inactive
+{
+    opacity: 0.3;
+}
+#changes_inactive
+{
+    opacity: 0.8;
+    position: absolute;
+    top: 213px;
+    background-color: #A8A8A8;
+    width: 100%;
+    height: 186px;
+    text-align: center;
+    font-size: 20px;
+    line-height: 186px;
+}
+
+.text-vert-center{
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+#switch_manual .item-time-change
+{
+    display:none;
 }

@@ -1,0 +1,112 @@
+body{
+    overflow-x:hidden;  // disable horizontal scrolling.
+    padding : 0px;
+    margin:0px;
+}
+#pie
+{
+    position: absolute;
+    -webkit-transform: scaleX(-1); /* webkit */
+    /* -webkit-transform: rotate(315deg); */
+    -webkit-transform-origin: center center;
+    width: 270px;
+    height: 270px;
+    /* left: 10px; */
+    opacity: 0.4;
+    /* z-index: 1; */
+}
+#rotationSliderContainer { 
+    position: absolute;
+    width: 270px;
+    height: 270px;
+    border-radius: 160px;
+    /* background: #FF7400; */
+    /* margin: 50px auto; */
+    cursor: default;
+    /* -webkit-tap-highlight-color: initial; */
+}
+.rotationSlider { 
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    background: #A64B00;
+    border-radius: 25px;
+    cursor: pointer;
+    z-index: 11;
+}
+.touchslider_active
+{
+    background: #00d449;
+}
+
+#rotationSlider_1
+{
+    //background: black;
+    //background: none;
+    //border: 3px solid black;
+}
+#rotationSliderDegrees {
+    position: absolute;
+    top: 110px;
+    width: 100%;
+    font-size: 20px;
+    color: #FFF;
+    text-align: center;
+    -moz-user-select: none; 
+    -khtml-user-select: none; 
+    -webkit-user-select: none; 
+    -o-user-select: none;
+    z-index: 1000;
+}
+
+#clock_background
+{
+    position: absolute;
+    width: 270px;
+    height: 270px;
+    background-size: 100%;
+    background-image:url('../img/faces.png');
+    /* top: 38px; */
+}
+/*#add_slider
+{
+    width:40px;
+    height:20px;
+    background-color:#a6a6a6;
+    position: absolute;
+}*/
+
+#clock_date{
+    position:absolute;
+    left: 187px;
+    top: 127px;
+    color: #9d9d9d;
+}
+
+#klok_container
+{
+    position:absolute;
+    left: 25px;
+    /* height: 100px; */
+}
+
+.klok_buttons
+{
+    //display: inline-block !important;
+}
+
+#clock_buttons
+{
+    position:absolute;
+    top: 430px;
+}
+
+#klok_container2
+{
+    height: 296px;
+}
+
+.topslider_inactive
+{
+    background-color: white !important;
+}
