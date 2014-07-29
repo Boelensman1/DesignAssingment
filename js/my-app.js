@@ -145,30 +145,30 @@ $('#set_temps').click(function() {
 })
 
 $('#targetTempupArrow').click(function() {
-    var temp = parseInt($('#targetTempText').html());
-    if (temp < 30)
+    var temp = $('#targetTempText').html() + '.' + String(parseInt($('#targetTempSmall').html()));
+    temp++;
+    if (temp > 30)
     {
-        temp++;
-        set_target_to_temp(temp);
-        //set_value('weekProgramState', 'week_program_state', 'off');
-        set_value('currentTemperature', 'current_temperature', temp);
+        temp = 30;
     }
+    set_target_to_temp(temp);
+    set_value('currentTemperature', 'current_temperature', temp);
     switch_off_program(false, temp);
 });
 $('#targetTempdownArrow').click(function() {
 
-    var temp = parseInt($('#targetTempText').html());
-    if (temp > 5)
+    var temp = $('#targetTempText').html() + '.' + String(parseInt($('#targetTempSmall').html()));
+    temp--;
+    if (temp < 5)
     {
-        temp--;
-        set_target_to_temp(temp);
-        //set_value('weekProgramState', 'week_program_state', 'off');
-        set_value('currentTemperature', 'current_temperature', temp);
+        temp = 5;
     }
+    set_target_to_temp(temp);
+    set_value('currentTemperature', 'current_temperature', temp);
     switch_off_program(false, temp);
 });
 $$('#targetTemp').on('click', function() {
-    var temp = $('#targetTempText').html() + '.' + String(parseInt($('#targetTempSmall').html()) * 0.1);
+    var temp = $('#targetTempText').html() + '.' + String(parseInt($('#targetTempSmall').html()));
     var is_checked = '';
     if (program_state == 'off')
     {
