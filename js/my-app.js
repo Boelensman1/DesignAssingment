@@ -34,13 +34,25 @@ $('#dev_close').click(function() {
 $('#dev_reload').click(function() {
     location.reload();
 });
+myApp.showPreloader();
 $(function() {
+
     setTimeout(function() {
+        $('.button-help').click(function() {
+            help_function_on($('.view.active .page_title').attr('tit'), $('.view.active .page_title'), false);
+        });
+
+        if (day == '')
+        {
+            window.location.href = "no_internet.html";
+        }
+        check_online(2000)
         set_day();
         get_target_temp().done(function(result) {
             set_target_to_temp(result);
             create_switches(true);
             set_time(200);
+            myApp.hidePreloader();
         });
     }, 2000);
     set_to_servertemp(100);
@@ -81,6 +93,7 @@ get_program().done(function(result) {
     program = result;
 });
 
+
 $('#changes_inactive').click(function() {
     switch_on_program();
 });
@@ -99,6 +112,38 @@ $('#debug_time').change(function() {
     time.setHours(tim[0]);
     reinit_switches(true);
 });
+
+$('#set_temps').click(function() {
+
+    myApp.modal({title: 'Set Day/Night Temperatures',
+        text: '<div class="daynight-set-container"><div class="day-set_text">Temp. Day<input type="text" id="temp_input_day" class="modal-prompt-input" value="' + temp_day + '"></div>\n\
+                <div class="night-set_text">Temp. Night<input type="text" id="temp_input_night" class="modal-prompt-input" value="' + temp_night + '"></div></div>',
+        buttons: [
+            {text: 'Cancel'}, {text: 'Ok',
+                onClick: function(modal) {
+                    var tmp_day = $(modal).find('#temp_input_day').val();
+                    var tmp_night = $(modal).find('#temp_input_night').val();
+                    if (tmp_day <= 30 && tmp_day >= 5 && tmp_night <= 30 && tmp_night >= 5)
+                    {
+                        temp_day = tmp_day;
+                        temp_night = tmp_night;
+
+                        set_value('dayTemperature', 'day_temperature', temp_day);
+                        set_value('nightTemperature', 'night_temperature', temp_night);
+
+                        get_target_temp().done(function(result) {
+                            set_target_to_temp(result);
+                        });
+                    }
+                    else
+                    {
+                        myApp.alert('Please choose a temperature between 5 and 30 degrees.', 'Invalid temperature.');
+                    }
+                }
+            }
+        ]})
+})
+
 $('#targetTempupArrow').click(function() {
     var temp = parseInt($('#targetTempText').html());
     if (temp < 30)
@@ -123,10 +168,15 @@ $('#targetTempdownArrow').click(function() {
     switch_off_program(false, temp);
 });
 $$('#targetTemp').on('click', function() {
-    var temp = parseInt($('#targetTempText').html()) + (parseInt($('#targetTempSmall').html()) * 0.1);
+    var temp = $('#targetTempText').html() + '.' + String(parseInt($('#targetTempSmall').html()) * 0.1);
+    var is_checked = '';
+    if (program_state == 'off')
+    {
+        is_checked = 'checked';
+    }
     myApp.modal({title: 'Set Custom Temperature',
-        text: 'Temperature?<input type="text" id="temp_input" class="modal-prompt-input" value="' + temp + '">\n\
- <div class="item-title label">Vacation mode</div><div class="item-input"><label class="label-switch"><input type="checkbox" id="vacation_input"><div class="checkbox"></div></label></div>',
+        text: '<div class="temp-set-container"><div class="temp-set_text">Temperature<input type="text" id="temp_input" class="modal-prompt-input" value="' + temp + '"></div>\n\
+ <div class="vac-mode"><div class="item-title label">Vacation mode</div><div class="item-input"><label class="label-switch"><input type="checkbox" id="vacation_input" ' + is_checked + '><div class="checkbox"></div></label></div></div></div>',
         buttons: [
             {text: 'Cancel'}, {text: 'Ok',
                 onClick: function(modal) {
@@ -134,22 +184,55 @@ $$('#targetTemp').on('click', function() {
                     var vacation = $(modal).find('#vacation_input').is(':checked');
                     if (temp <= 30 && temp >= 5)
                     {
-                        set_target_to_temp(temp);
-                        switch_off_program(vacation, temp);
                         if (vacation)
                         {
                             set_value('weekProgramState', 'week_program_state', 'off');
                         }
+                        else
+                        {
+                            switch_on_program();
+                        }
+                        set_target_to_temp(temp);
+                        switch_off_program(vacation, temp);
                         set_value('currentTemperature', 'current_temperature', temp);
                     }
                     else
                     {
-                        myApp.alert('Please choose a temperature between 5 and 30 degrees.');
+                        myApp.alert('Please choose a temperature between 5 and 30 degrees.', 'Invalid temperature.');
                     }
                 }
             }
         ]})
 });
 $$('.klok-link').on('click', function() {
+    myApp.showIndicator();
     klok_load($(this).find('.item-title').html());
 });
+
+$('.button-week-bottom').click(function() {
+    if ($('#view-2 .pages .page').length != 1)
+    {
+        view2.goBack();
+    }
+})
+
+$('.button-rest').click(function() {
+    if ($('#view-2 .pages .page').length != 1)
+    {
+        $('#view-2 .pages .page').each(function() {
+            if ($(this).attr('data-page') == 'index-2')
+            {
+                $(this).removeClass('page-on-left');
+            }
+            else
+            {
+                $(this).remove();
+            }
+        });
+        view2.destroy();
+        view2 = myApp.addView('#view-2', {
+            // Because we use fixed-through navbar we can enable dynamic navbar
+            dynamicNavbar: true
+        });
+    }
+})

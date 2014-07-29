@@ -4,13 +4,17 @@
  * and open the template in the editor.
  */
 
-var degrees_slider, sliders = 0, day, reversed, degreesbyid = new Object(), prev_degree_sliders, timeout = 0, offsetX, newdegree, sliderWidth, sliderHeight, moveobj, moveid, offsetY, $container, move, radius, $slider, $degrees;
-reversed = 1;
+var degrees_slider, sliders = 0, day_clock, reversed, degreesbyid = new Object(), prev_degree_sliders, timeout = 0, offsetX, newdegree, sliderWidth, sliderHeight, moveobj, moveid, offsetY, $container, move, radius, $slider, $degrees;
+reversed = false;
+
+var rad = Math.PI / 180;
 function klok_load(dag)
 {
+
+
     degrees_slider = new Array()
     sliders = 0
-    reversed = 1
+    reversed = false
     degreesbyid = new Object()
     prev_degree_sliders = 0
     timeout = 0
@@ -26,10 +30,16 @@ function klok_load(dag)
     radius = 0
     $slider = 0
     $degrees = 0;
+    move_deg_prev = -1;
 
-    day = dag;
+    day_clock = dag;
     setTimeout(function() {
-        $('.klok-title').html(dag);
+
+        $('.help-clock').click(function() {
+            help_function_on('klok', $('.klok-title'), true);
+        });
+
+        $('.klok-title').html(day_clock);
         $container = $('#rotationSliderContainer');
         $slider = $('.rotationSlider');
         $degrees = $('#rotationSliderDegrees');
@@ -39,19 +49,18 @@ function klok_load(dag)
             e.preventDefault();
         }
         $('#add_slider').click(add_slider_click);
-        $('#add_slider').on({'touchend': add_slider_click});
 
         $('body').on({'touchmove': touchmove_func});
         $('body').on({'mousemove': touchmove_func});
         $('#rotationSliderContainer').click(delete_slider);
-        $('#rotationSliderContainer').on({'touchend': delete_slider});
+        //$('#rotationSliderContainer').on({'touchend': delete_slider});
 
 
 
         $('#clock_apply').click(sliders_apply_clicked);
-        $('#clock_reverse').click(function() {
-            reversed = !reversed;
-            rotate_pie(degrees_slider);
+        $('#clock_revert').click(function() {
+            myApp.showIndicator();
+            klok_reload();
         });
 
 
@@ -64,16 +73,15 @@ function klok_load(dag)
         sliders = 0;
 
         var degrees_slider_tmp = new Array();
-        for (var switc in program[dag].switches)
+        for (var switc in program[day_clock].switches)
         {
-            var swit = program[dag].switches[switc];
+            var swit = program[day_clock].switches[switc];
             if (swit.state == 'on')
             {
-                reversed = (swit.type == 'day');
                 var degg = time2deg(swit.time);
-                if (degg == 0)
+                if (degg == 360)
                 {
-                    degg = 360;
+                    degg = 0;
                 }
                 add_slider(degg);
                 degrees_slider_tmp.push(degg);
@@ -84,15 +92,48 @@ function klok_load(dag)
         });
 
         rotate_pie(degrees_slider_tmp);
-
-        var today = new Date();
-        var dd = today.getDate();
-
-        if (dd < 10) {
-            dd = '0' + dd
-        }
-        $('#clock_date').html(dd);
+        $('#clock_date').html(day_clock);
+        myApp.hideIndicator();
     }, 500);
+}
+
+function klok_reload()
+{
+    move = false
+    moveid = 0;
+    newdegree = 0;
+    degrees_slider = new Array()
+    sliders = 0
+    reversed = false
+    degreesbyid = new Object()
+    prev_degree_sliders = 0
+    timeout = 0
+    moveobj = 0
+    move = 0
+    move_deg_prev = -1;
+
+    $('.rotationSlider').remove();
+    var degrees_slider_tmp = new Array();
+    for (var switc in program[day_clock].switches)
+    {
+        var swit = program[day_clock].switches[switc];
+        if (swit.state == 'on')
+        {
+            var degg = time2deg(swit.time);
+            if (degg == 360)
+            {
+                degg = 0;
+            }
+            add_slider(degg);
+            degrees_slider_tmp.push(degg);
+        }
+    }
+    degrees_slider_tmp.sort(function(a, b) {
+        return a - b
+    });
+
+    rotate_pie(degrees_slider_tmp);
+    myApp.hideIndicator();
 }
 function sliders_apply_clicked(e)
 {
@@ -102,9 +143,9 @@ function sliders_apply_clicked(e)
             label: true
         },
         {
-            text: day,
+            text: day_clock,
             onClick: function() {
-                sliders_apply([day]);
+                sliders_apply([day_clock]);
             }
         },
         {
@@ -116,16 +157,19 @@ function sliders_apply_clicked(e)
         {
             text: 'Cancel',
             red: true
-        },
+        }
     ];
     myApp.actions(buttons);
 }
 function select_days()
 {
     myApp.modal({
-        text: '<div class="list-block smart-select-list-days"><ul><li><div class="item-divider">select days</div></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Monday" checked=""><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Monday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Tuesday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Tuesday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Wednesday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Wednesday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Thursday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Thursday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Friday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Friday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Saturday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Saturday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Sunday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Sunday</div></div></label></li></ul></div>',
+        text: '<div class="list-block smart-select-list-days"><ul><li><div class="item-divider">select days</div></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Monday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Monday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Tuesday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Tuesday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Wednesday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Wednesday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Thursday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Thursday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Friday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Friday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Saturday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Saturday</div></div></label></li><li><label class="label-checkbox item-content"><input type="checkbox" name="checkbox-1406307247818" value="Sunday"><div class="item-media"><i class="icon icon-form-checkbox"></i></div><div class="item-inner"><div class="item-title">Sunday</div></div></label></li></ul></div>',
         buttons: [
             {
+                text: 'Cancel',
+                red: true
+            }, {
                 text: 'Apply',
                 onClick: function() {
                     var dagen = new Array();
@@ -137,9 +181,16 @@ function select_days()
                     });
                     sliders_apply(dagen);
                 }
-            },
+            }
         ]
     });
+    $('.smart-select-list-days ul li .item-content input').each(function() {
+        if ($(this).val() == day_clock)
+        {
+            $(this).attr('checked', 'checked');
+        }
+    });
+
 }
 
 function sliders_apply(dagen)
@@ -218,43 +269,25 @@ function touchstart_func(e)
             move = true;
             moveobj = this;
             moveid = $(moveobj).attr('id').substr(15);
-            //if (moveid !== '1')
-            if (true)
-            {
-                $(this).removeClass('touchslider_active');
-                prev_degree_sliders = new Array();
-                for (i = 1; i < (sliders + 1); i++) {
-                    if (i != moveid)
-                    {
-                        prev_degree_sliders.push(degreesbyid[i]);
-                    }
-                    else
-                    {
-                        newdegree = degreesbyid[i];
-                    }
-                }
-            }
-            else
-            {
-                move = false;
-                if ($(this).hasClass('topslider_inactive'))
+            $(this).addClass('touchslider_active');
+            prev_degree_sliders = new Array();
+
+            for (var index in degreesbyid) {
+                if (index != moveid)
                 {
-                    $(this).removeClass('topslider_inactive');
-                    degrees_slider.push(360);
-                    rotate_pie(degrees_slider);
+                    prev_degree_sliders.push(degreesbyid[index]);
                 }
                 else
                 {
-                    $(this).addClass('topslider_inactive');
-                    degrees_slider.pop();
-                    rotate_pie(degrees_slider);
+                    newdegree = degreesbyid[index];
                 }
             }
+
         }
     }
     else
     {
-        //timeout = 0;
+//timeout = 0;
     }
 }
 function touchend_func(e) {
@@ -289,10 +322,43 @@ function touchmove_func(e)
          deg = Math.round(deg / 90) * 90;
          if (deg == 360)
          deg = 0;*/
-        X = Math.round(radius * Math.sin(deg * Math.PI / 180));
-        Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
-        $(moveobj).css({left: X + radius - sliderWidth / 2, top: Y + radius - sliderHeight / 2});
         var roundDeg = Math.round(deg);
+        if (roundDeg == 360)
+        {
+            roundDeg = 0;
+        }
+        var overlap = (move_deg_prev != roundDeg);
+        //var overlap = true;
+        while (overlap == true)
+        {
+            overlap = false;
+            if (degrees_slider.indexOf(roundDeg) != -1)
+            {
+                overlap = true;
+                if (move_deg_prev < roundDeg)
+                {
+                    roundDeg += 2;
+                    if (roundDeg >= 360)
+                    {
+                        roundDeg -= 360;
+                    }
+                }
+                else
+                {
+                    roundDeg -= 2;
+                    if (roundDeg < 0)
+                    {
+                        roundDeg += 360;
+                    }
+                }
+            }
+        }
+
+        X = Math.round(radius * Math.sin(roundDeg * Math.PI / 180));
+        Y = Math.round(radius * -Math.cos(roundDeg * Math.PI / 180));
+        $(moveobj).css({left: X + radius - sliderWidth / 2, top: Y + radius - sliderHeight / 2});
+
+        move_deg_prev = roundDeg;
         $degrees.html(to_time(roundDeg));
         $('#imageRotateDegrees').val(roundDeg);
         newdegree = roundDeg;
@@ -308,57 +374,79 @@ function touchmove_func(e)
 function rotate_pie(degrees)
 {
     $(function() {
-        degrees_slider = degrees.slice(0);
-        //degrees.shift();
-        $('#pie').html('');
-        var paper = Raphael("pie");
-        //var degreeleft = 0;
-        var degreeprev = 0;
-        var even = reversed;
-        degrees.forEach(function(degree) {
+        if (sliders > 2 || (sliders == 1 && degrees[0] !== 0 && degrees[0] !== 360))
+        {
+            degrees_slider = degrees.slice(0);
+            //degrees.shift();
+            $('#pie').html('');
+            var paper = Raphael("pie");
+            //var degreeleft = 0;
+            var degreeprev = 0;
+            var even = reversed;
+            degrees.forEach(function(degree) {
+                if (even == 1)
+                {
+                    sector(radius, radius, radius, degreeprev, degree, paper, true, {"fill": "grey", "stroke-width": 0});
+                    even = 0;
+                }
+                else
+                {
+                    sector(radius, radius, radius, degreeprev, degree, paper, true, {"fill": "black", "stroke-width": 0});
+                    even = 1;
+                }
+                console.log(degreeprev + ' - ' + (degree) + ' : ' + even);
+                degreeprev = degree;
+            });
+
+            console.log(degreeprev + ' - ' + (360) + ' : ' + even);
             if (even == 1)
             {
-                sector(radius, radius, radius, degreeprev, degree, paper, {"fill": "grey"});
-                even = 0;
+                sector(radius, radius, radius, degreeprev, 360, paper, true, {"fill": "grey", "stroke-width": 0});
             }
             else
             {
-                sector(radius, radius, radius, degreeprev, degree, paper, {"fill": "black"});
-                even = 1;
+                sector(radius, radius, radius, degreeprev, 360, paper, true, {"fill": "black", "stroke-width": 0});
             }
-            console.log(degreeprev + ' - ' + (degree) + ' : ' + even);
-            degreeprev = degree;
-        });
-
-        console.log(degreeprev + ' - ' + (360) + ' : ' + even);
-        if (even == 1)
-        {
-            sector(radius, radius, radius, degreeprev, 360, paper, {"fill": "grey"});
         }
         else
         {
-            sector(radius, radius, radius, degreeprev, 360, paper, {"fill": "black"});
+            $('#pie').html('');
+            var paper = Raphael("pie");
+            if (sliders == 0)
+            {
+                sector(radius, radius, radius, 1, 360, paper, false, {"fill": "black"});
+                sector(radius, radius, radius, 0, 1, paper, false, {"fill": "black"});
+            }
+            else
+            {
+                sector(radius, radius, radius, 0, 2, paper, false, {"fill": "grey", stroke: 'grey'});
+                sector(radius, radius, radius, 1, 360, paper, true, {"fill": "grey", stroke: 'grey'});
+            }
         }
     });
 }
 
 
-var rad = Math.PI / 180;
-function sector(cx, cy, r, startAngle, endAngle, paper, params) {
+function sector(cx, cy, r, startAngle, endAngle, paper, draw_lines, params) {
     startAngle = startAngle + 90;
     endAngle = endAngle + 90;
     var x1 = cx + r * Math.cos(-startAngle * rad),
             x2 = cx + r * Math.cos(-endAngle * rad),
             y1 = cy + r * Math.sin(-startAngle * rad),
             y2 = cy + r * Math.sin(-endAngle * rad);
-    return paper.path(["M", cx, cy, "L", x1, y1, "A", r, r, 0, +(endAngle - startAngle > 180), 0, x2, y2, "z"]).attr(params);
+    paper.path(["M", cx, cy, "L", x1, y1, "A", r, r, 0, +(endAngle - startAngle > 180), 0, x2, y2, "z"]).attr(params);
+    if (draw_lines == true)
+    {
+        paper.path(["M", cx, cy, "L", x2, y2]).attr({stroke: 'green', "stroke-width": 5});
+    }
+    return 1;
 }
 
 function add_slider(degree)
 {
-    if (degree == 0)
+    if (degree == 360)
     {
-        degree = 360;
+        degree = 0;
     }
     sliders++;
     for (i = 1; i <= sliders; i++)
@@ -374,12 +462,18 @@ function add_slider(degree)
     var deg = degree;
     X = Math.round(radius * Math.sin(deg * Math.PI / 180));
     Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
-    $('#rotationSlider_' + (sliders)).css({left: X + radius - sliderWidth / 2, top: Y + radius - sliderHeight / 2});
+    $('#rotationSlider_' + (new_sliderid)).css({left: X + radius - sliderWidth / 2, top: Y + radius - sliderHeight / 2});
     degreesbyid[new_sliderid] = degree;
+    $('.rotationSlider').off();
     $('.rotationSlider').on({'touchstart': touchstart_func});
     $('.rotationSlider').on({'mouseup': touchstart_func});
     $('.rotationSlider').on({'touchend': touchend_func});
     $('.rotationSlider').on({'mousedown': touchend_func});
+
+    if (sliders == 10)
+    {
+        $('#add_slider').addClass('button_disabled');
+    }
 }
 function add_slider_click(e) {
     if (sliders < 10)
@@ -387,53 +481,72 @@ function add_slider_click(e) {
         var maxdistance = 0;
         var prev_degree = 0;
         var new_degree1, new_degree2;
-        degrees_slider.forEach(function(degree) {
-            if (maxdistance < (degree - prev_degree))
+        if (sliders > 0)
+        {
+            degrees_slider.forEach(function(degree) {
+                if (maxdistance < (degree - prev_degree))
+                {
+                    maxdistance = (degree - prev_degree);
+                    new_degree1 = Math.round(prev_degree + maxdistance / 3);
+                    new_degree2 = Math.round(prev_degree + maxdistance / 1.5);
+                    //console.log('+ max:' + maxdistance + ' prev:' + prev_degree + ' new1:' + new_degree1 + ' new2:' + new_degree2);
+                }
+                prev_degree = degree;
+            })
+            final_degree = degrees_slider[0];
+            if (final_degree == prev_degree)
             {
-                maxdistance = (degree - prev_degree);
+                new_degree1 = Math.round(prev_degree + 360 / 3);
+                new_degree2 = Math.round(prev_degree + 360 / 1.5);
+            }
+            if (degrees_slider[0] == 0)
+            {
+                final_degree = 360;
+            }
+            if (maxdistance <= (final_degree - prev_degree))
+            {
+                maxdistance = (final_degree - prev_degree);
                 new_degree1 = Math.round(prev_degree + maxdistance / 3);
                 new_degree2 = Math.round(prev_degree + maxdistance / 1.5);
                 //console.log('+ max:' + maxdistance + ' prev:' + prev_degree + ' new1:' + new_degree1 + ' new2:' + new_degree2);
             }
-            prev_degree = degree;
-        })
-        final_degree = degrees_slider[0];
-        if (degrees_slider[0] == 0)
-        {
-            final_degree = 360;
-        }
-        if (maxdistance < (final_degree - prev_degree))
-        {
-            maxdistance = (final_degree - prev_degree);
-            new_degree1 = Math.round(prev_degree + maxdistance / 3);
-            new_degree2 = Math.round(prev_degree + maxdistance / 1.5);
-            //console.log('+ max:' + maxdistance + ' prev:' + prev_degree + ' new1:' + new_degree1 + ' new2:' + new_degree2);
-        }
-        degrees_slider.push(new_degree1);
-        degrees_slider.push(new_degree2);
-        degrees_slider.sort(function(a, b) {
-            return a - b
-        });
-        add_slider(new_degree1);
-        add_slider(new_degree2);
-        rotate_pie(degrees_slider);
 
-        if (sliders == 10)
-        {
-            $('#add_slider').addClass('button_disabled');
-            myApp.popover('.popover-switches', this);
+            if (sliders < 9)
+            {
+                degrees_slider.push(new_degree1);
+                degrees_slider.push(new_degree2);
+                degrees_slider.sort(function(a, b) {
+                    return a - b
+                });
+                add_slider(new_degree1);
+                add_slider(new_degree2);
+            }
+            else
+            {
+
+                degrees_slider.push(new_degree1);
+                degrees_slider.sort(function(a, b) {
+                    return a - b
+                });
+                add_slider(new_degree1);
+            }
         }
+        else
+        {
+            degrees_slider.push(0);
+            add_slider(360);
+        }
+        rotate_pie(degrees_slider);
     }
     else
     {
-
         myApp.popover('.popover-switches', this);
     }
 
 }
 function delete_slider(e)
 {
-    if (timeout == 0 && move == false)
+    if (timeout == 0 && move == false && sliders > 0)
     {
         if (typeof e.pageX === "undefined" || typeof e.pageY === "undefined") {
             var mPos = {x: e.originalEvent.touches[0].pageX, y: e.originalEvent.touches[0].pageY};
@@ -460,18 +573,34 @@ function delete_slider(e)
             }
             prev_degree = degree;
         });
-        /*if (deg1 == 0 || deg1 == 360 || deg2 == 0 || deg2 == 360)
-         {
-         
-         }*/
-        if (sliders <= 2) {
-
+        if (deg1 == undefined)//laatste sector
+        {
+            deg1 = prev_degree;
+            deg2 = 360;
+            deg1_id = deg_to_id(deg1);
+            deg2_id = null;
+        }
+        if (sliders == 1)
+        {
+            var r = confirm('sure you want to delete the last switches?');
         }
         else
         {
             var r = confirm('sure you want to delete ' + to_time(deg1) + '-' + to_time(deg2) + '?');
-            if (r == true) {
+        }
+        if (r == true) {
 
+            $('#add_slider').removeClass('button_disabled');
+            if (sliders == 1)
+            {
+                degreesbyid = new Object();
+                degrees_slider = new Array();
+                $('.rotationSlider').remove();
+                sliders -= 1;
+
+            }
+            else
+            {
                 //console.log('---');
                 degrees_slider = new Array();
                 for (var index in degreesbyid) {
@@ -490,14 +619,22 @@ function delete_slider(e)
                     }
                 }
                 //console.log('---');
-                sliders -= 2;
                 $('#rotationSlider_' + (deg1_id)).remove();
                 $('#rotationSlider_' + (deg2_id)).remove();
                 degrees_slider.sort(function(a, b) {
                     return a - b
                 });
-                rotate_pie(degrees_slider);
+
+                if (deg2_id == null)
+                {
+                    sliders -= 1;
+                }
+                else
+                {
+                    sliders -= 2;
+                }
             }
+            rotate_pie(degrees_slider);
         }
     }
 }
@@ -526,6 +663,10 @@ function to_time(deg)
     var d = new Date(0, 0, 0, 0, tim, 0, 0);
     hours = pad(d.getHours());
     minutes = pad(d.getMinutes());
+    if (deg == 360)
+    {
+        hours = 24;
+    }
     return(hours + ':' + minutes);
 }
 

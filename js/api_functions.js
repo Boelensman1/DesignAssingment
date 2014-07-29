@@ -2,6 +2,23 @@ var base_url = 'http://pcwin889.win.tue.nl/2id40-ws/20/';
 var list_switches = 0;
 var list_switches_time = new Array();
 
+var help_function = new Object();
+
+help_function.overview = new Object();
+help_function.overview.id = 'help_overview';
+help_function.overview.number = 3;
+
+help_function.week = new Object();
+help_function.week.id = 'help_week';
+help_function.week.number = 1;
+
+help_function.klok = new Object();
+help_function.klok.id = 'help_klok';
+help_function.klok.number = 6;
+
+var prev_titel = '';
+
+
 function get_value(val1, val2)
 {// create a deferred object
     var r = $.Deferred();
@@ -17,6 +34,56 @@ function get_values(val1, val2)
         r.resolve(result[val2]);
     });
     return r;
+}
+
+function help_function_on(titel, titel_id, hide_back)
+{
+    if ($('#help').is(':visible'))
+    {
+
+        $(titel_id).html(prev_titel);
+        $('#help').html('');
+        $('.help-pagination').html('');
+        $('#help').hide();
+        $('.help-pagination').hide();
+        if (hide_back == true)
+        {
+            $('.back_div').show();
+            $(titel_id).css('margin-right', '0px');
+        }
+    }
+    else
+    {
+        prev_titel = $(titel_id).html();
+        $('#help').html('<div class="swiper-container"><div class="swiper-wrapper"></div></div>');
+        $('#help').show();
+        $('.help-pagination').show();
+
+        if (hide_back == true)
+        {
+            $('.back_div').hide();
+            $(titel_id).html('Help (Clock)');
+            $(titel_id).css('margin-right', '-100px');
+        }
+        else
+        {
+            $(titel_id).html('Help (' + prev_titel + ')');
+        }
+        var mySwiper = $('.swiper-container').swiper({pagination: '.help-pagination'
+        });
+        for (i = 1; i <= help_function[titel].number; i++) {
+            var img_src = './img/help/' + help_function[titel].id + i + '.png';
+            if (i !== 1 || help_function[titel].number == 1)
+            {
+                var newSlide = mySwiper.createSlide('<img src="' + img_src + '"></img>');
+            }
+            else
+            {
+                var newSlide = mySwiper.createSlide('<img src="' + img_src + '"></img><div id="help-slide"><span>swipe for more &lt; </span></div>');
+            }
+            newSlide.append();
+        }
+    }
 }
 
 function set_value(val1, val2, value)
@@ -184,6 +251,10 @@ function create_switches(show_all)
             }
         }
     }
+    if (list_switches == 0)
+    {
+        $('#switches_menu').append('<li class="item-content switch_active" time_till_active="1" id="switch_noswitches"><div class="item-media"><i class="icon icon-noswitches"></i></div><div class="item-inner"><div class="item-title switch-time">No switches defined.</div><div class="item-after item-time-change">NOW</div></div></li>');
+    }
     switches_sort();
 }
 
@@ -237,7 +308,7 @@ function update_time_till_active()
 {
     $('#switches_menu li').each(function() {
         var idd = $(this).attr('id').substr(7);
-        if (idd == active_list_switch && program_state == 'on' && manual_temp == false) {
+        if (idd == active_list_switch && program_state == 'on' && manual_temp == false || list_switches == 0) {
             $(this).attr('time_till_active', 0);
         }
         else
@@ -256,7 +327,7 @@ function update_switchmenu()
         {
             if (manual_temp == true)
             {
-                $("#switch_manual").hide("fast", function() {
+                $("#switch_manual").hide("slow", function() {
                     $('#switch_manual').remove();
                 });
                 manual_temp = false;
@@ -439,8 +510,12 @@ function switch_off_program(is_vacation, temp)
     reinit_switches(true);
     if (is_vacation == false)
     {
-        $('#switches_menu').append('<li class="item-content switch_active" time_till_active="-1" id="switch_manual"><div class="item-media"><i class="icon icon-manual"></i></div><div class="item-inner"><div class="item-title switch-time">Manual Temperature (' + temp + '°)</div><div class="item-after item-time-change">NOW</div></div></li>');
+        $('#switches_menu').append('<li class="item-content switch_active" time_till_active="-1" id="switch_manual"><div class="item-media"><i class="icon icon-manual"></i></div><div class="item-inner"><div class="item-title switch-time">Manual Temperature (' + temp + '°). Click to remove.</div><div class="item-after item-time-change">NOW</div></div></li>');
         $("#switches_menu li").sort(asc_sort).appendTo('#switches_menu');
+        $('#switch_manual').click(function() {
+            set_value('weekProgramState', 'week_program_state', 'off');
+            switch_on_program();
+        });
     }
     else
     {
@@ -461,5 +536,29 @@ function switch_on_program()
         set_target_to_temp(result);
     });
     $('#changes').removeClass('switches_inactive');
-    $('#changes_inactive').hide('fast');
+    $('#changes_inactive').hide('slow');
+}
+
+function check_online(timeout)
+{
+    if (navigator.onLine == true)
+    {
+        var base_url = 'http://pcwin889.win.tue.nl/2id40-ws/20/';
+        $.ajax({url: base_url + 'time', dataType: 'json'}).always(function(result) {
+            if (result.hasOwnProperty('time') == false) {
+                //er is geen internet!
+                window.location.href = "no_internet.html";
+            }
+        });
+
+    }
+    else
+    {
+        //er is geen internet!
+        window.location.href = "no_internet.html";
+    }
+
+    setTimeout(function() {
+        check_online(timeout)
+    }, timeout);
 }
