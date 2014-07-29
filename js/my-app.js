@@ -67,6 +67,8 @@ temp_night = 0;
 time = 0;
 active_list_switch = -1;
 active_array = new Array();
+program = '';
+r_program = '';
 get_value('WeekProgramState', 'week_program_state').done(function(result) {
     program_state = result;
     if (program_state == 'off')
@@ -90,7 +92,8 @@ get_value('nightTemperature', 'night_temperature').done(function(result) {
 });
 
 get_program().done(function(result) {
-    program = result;
+    program = result[0];
+    r_program = result[1];
 });
 
 

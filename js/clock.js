@@ -73,9 +73,9 @@ function klok_load(dag)
         sliders = 0;
 
         var degrees_slider_tmp = new Array();
-        for (var switc in program[day_clock].switches)
+        for (var switc in r_program[day_clock].switches)
         {
-            var swit = program[day_clock].switches[switc];
+            var swit = r_program[day_clock].switches[switc];
             if (swit.state == 'on')
             {
                 var degg = time2deg(swit.time);
@@ -114,9 +114,9 @@ function klok_reload()
 
     $('.rotationSlider').remove();
     var degrees_slider_tmp = new Array();
-    for (var switc in program[day_clock].switches)
+    for (var switc in r_program[day_clock].switches)
     {
-        var swit = program[day_clock].switches[switc];
+        var swit = r_program[day_clock].switches[switc];
         if (swit.state == 'on')
         {
             var degg = time2deg(swit.time);
@@ -196,8 +196,9 @@ function select_days()
 function sliders_apply(dagen)
 {
 
+    myApp.showIndicator();
     dagen.forEach(function(dag) {
-        program[dag].switches = new Array(10);
+        r_program[dag].switches = new Array(10);
         var even = reversed;
         var i = -1;
         var object;
@@ -207,7 +208,7 @@ function sliders_apply(dagen)
                 i++;
                 object = {"state": "on", "type": "night"};
                 object.time = to_time(degree);
-                program[dag].switches[i] = (object);
+                r_program[dag].switches[i] = (object);
                 even = 0;
             }
             else
@@ -215,7 +216,7 @@ function sliders_apply(dagen)
                 i++;
                 object = {"state": "on", "type": "day"};
                 object.time = to_time(degree);
-                program[dag].switches[i] = object;
+                r_program[dag].switches[i] = object;
                 even = 1;
             }
         });
@@ -224,12 +225,12 @@ function sliders_apply(dagen)
             i++;
             if (even == 1)
             {
-                program[dag].switches[i] = {"state": "off", "type": "night", "time": "00:00"};
+                r_program[dag].switches[i] = {"state": "off", "type": "night", "time": "00:00"};
                 even = 0;
             }
             else
             {
-                program[dag].switches[i] = {"state": "off", "type": "day", "time": "00:00"};
+                r_program[dag].switches[i] = {"state": "off", "type": "day", "time": "00:00"};
                 even = 1;
             }
 
@@ -238,14 +239,21 @@ function sliders_apply(dagen)
 
     var json = new Object;
     json.week_program = new Object;
-    json.week_program.days = program;
+    json.week_program.days = r_program;
     json.week_program.state = program_state;
     var json_text = JSON.stringify(json, null, 2);
-    $('#test').html(json_text);
 
     set_values('WeekProgram', json_text).done(function(result)
     {
-        //   alert(result);
+        get_program().done(function(result) {
+            program = result[0];
+            r_program = result[1];
+            get_target_temp().done(function(result) {
+                set_target_to_temp(result);
+                reinit_switches(true);
+                myApp.hideIndicator();
+            });
+        });
     });
 }
 function touchstart_func(e)

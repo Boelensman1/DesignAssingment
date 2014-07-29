@@ -263,7 +263,32 @@ function get_program()
 // create a deferred object
     var r = $.Deferred();
     get_values('weekProgram', 'week_program').done(function(result) {
-        r.resolve(result.days);
+        var retur = jQuery.extend(true, {}, result.days);
+
+        var midnight_obj = new Object();
+        midnight_obj.state = 'on';
+        midnight_obj.time = '00:00';
+        midnight_obj.type = 'night';
+        for (var entry in retur)
+        {
+            var is_midnight = false;
+            for (var switc in retur[entry].switches)
+            {
+                var swit = retur[entry].switches[switc];
+                if (swit.state == 'on')
+                {
+                    if (swit.time == '00:00')
+                    {
+                        is_midnight = true;
+                    }
+                }
+            }
+            if (is_midnight == false)
+            {
+                retur[entry].switches.push(midnight_obj);
+            }
+        }
+        r.resolve([retur, result.days]);
     })
     return r;
 }
