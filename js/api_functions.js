@@ -154,11 +154,7 @@ function set_time(timeout)
 function set_day()
 {
     get_value('day', 'current_day').done(function(result) {
-        var x = day2number(result);
-        if (x == 0)
-        {
-            x = 31;
-        }
+        var x = day2number(result) + 7;
         time.setDate(x);
         $('#cur_day span').html(result)
     });
@@ -205,7 +201,7 @@ function get_active_switch(dag, recur)
         var swit = program[dag].switches[switc];
         if (swit.state == 'on')
         {
-            var tim = get_datetime(dag, swit.time);
+            var tim = get_datetime(dag, swit.time, true);
             tim = get_time_to(tim, 3);
             if ((tim > smallest || smallest == 1) && tim <= 0)
             {
@@ -214,7 +210,7 @@ function get_active_switch(dag, recur)
             }
         }
     }
-    tim = get_datetime(dag, program[dag].switches[active_switch_id].time);
+    tim = get_datetime(dag, program[dag].switches[active_switch_id].time, true);
     var result;
     if (smallest == 1)
     {
@@ -246,7 +242,7 @@ function create_switches(show_all)
             var swit = program[entry].switches[switc];
             if (swit.state == 'on')
             {
-                var d = get_datetime(entry, swit.time);
+                var d = get_datetime(entry, swit.time, true);
                 add_switchmenu((swit.type == 'night'), d, show_all);
             }
         }
@@ -378,12 +374,19 @@ function update_switchmenu()
     });
 }
 
-function get_datetime(day, tim)
+function get_datetime(day, tim, add)
 {
     tim = tim.split(":");
     var hours = tim[0];
     var minutes = tim[1];
-    var d = new Date(0, 0, day2number(day), hours, minutes, 0, 0);
+    if (day != 'Sunday' || add == false)
+    {
+        var d = new Date(0, 0, day2number(day) + 7, hours, minutes, 0, 0);
+    }
+    else
+    {
+        var d = new Date(1900, 0, 7, hours, minutes, 0, 0);
+    }
     return d;
 }
 
@@ -453,12 +456,25 @@ function get_time_to(date1, format)
     var newtime = date1 - time;
     if (format == 1)
     {
-        var str;
+        //if (time.get)
+        var newtime = date1 - time;
+    }
+
+    if (date1.getDay() == 0 && newtime == 60000)
+    {
+        newtime = 0;
+    }
+    var str;
+    if (format == 1)
+    {
         if (newtime < 0 || newtime > 23 * 60 * 60 * 1000 || ((newtime > 12 * 60 * 60 * 1000) && (date1.getDate() != time.getDate())))
         {
-            var days_togo = date1.getDay() - time.getDay();
+            var days_togo = date1.getDate() - time.getDate();
+            var a = date1.getDate();
+            var b = time.getDate();
             if (days_togo <= 0)
             {
+                //var days_togo = date1.getDate() + 7 - time.getDate();
                 days_togo += 7;
             }
             if (days_togo == 1)
@@ -500,16 +516,16 @@ function get_time_to(date1, format)
     {
         if (format == 0)
         {
-            if ((newtime < 0))
+            if (newtime < 0)
             {
-                if (date1.getDay() == 0)
-                {
-                    var date3 = new Date(1900, 0, 7, date1.getHours(), date1.getMinutes(), 0, 0);
-                }
-                else
-                {
-                    var date3 = new Date(0, 0, date1.getDate() + 7, date1.getHours(), date1.getMinutes(), 0, 0);
-                }
+                //if (date1.getDay() == 0)
+                //{
+                //var date3 = new Date(1900, 0, 7, date1.getHours(), date1.getMinutes(), 0, 0);
+                /*}
+                 else
+                 {*/
+                var date3 = new Date(0, 0, date1.getDate() + 7, date1.getHours(), date1.getMinutes(), 0, 0);
+                //}
                 newtime = date3 - time;
             }
         }
@@ -527,6 +543,7 @@ function reinit_switches(show_all)
     list_switches_time = new Array();
     $('#switches_menu').html('');
     create_switches(show_all);
+    return true;
 }
 
 function switch_off_program(is_vacation, temp)
@@ -535,7 +552,7 @@ function switch_off_program(is_vacation, temp)
     reinit_switches(true);
     if (is_vacation == false)
     {
-        $('#switches_menu').append('<li class="item-content switch_active" time_till_active="-1" id="switch_manual"><div class="item-media"><i class="icon icon-manual"></i></div><div class="item-inner"><div class="item-title switch-time">Manual Temperature (' + temp + '°). Click to remove.</div><div class="item-after item-time-change">NOW</div></div></li>');
+        $('#switches_menu').append('<li class="item-content switch_active" time_till_active="-1" id="switch_manual"><div class="item-media"><i class="icon icon-manual"></i></div><div class="item-inner"><div class="item-title switch-time">Fixed temp. Click to remove.</div><div class="item-after item-time-change">NOW</div></div></li>');
         $("#switches_menu li").sort(asc_sort).appendTo('#switches_menu');
         $('#switch_manual').click(function() {
             set_value('weekProgramState', 'week_program_state', 'off');
@@ -586,4 +603,36 @@ function check_online(timeout)
     setTimeout(function() {
         check_online(timeout)
     }, timeout);
+}
+
+function show_set_temps()
+{
+
+    myApp.modal({title: 'Set Day/Night Temperatures',
+        text: '<div class="daynight-set-container"><div class="day-set_text">Temp. Day<input type="text" id="temp_input_day" class="modal-prompt-input" value="' + temp_day + '"></div>\n\
+                <div class="night-set_text">Temp. Night<input type="text" id="temp_input_night" class="modal-prompt-input" value="' + temp_night + '"></div></div>',
+        buttons: [
+            {text: 'Cancel'}, {text: 'Ok',
+                onClick: function(modal) {
+                    var tmp_day = $(modal).find('#temp_input_day').val();
+                    var tmp_night = $(modal).find('#temp_input_night').val();
+                    if (tmp_day <= 30 && tmp_day >= 5 && tmp_night <= 30 && tmp_night >= 5)
+                    {
+                        temp_day = tmp_day;
+                        temp_night = tmp_night;
+
+                        set_value('dayTemperature', 'day_temperature', temp_day);
+                        set_value('nightTemperature', 'night_temperature', temp_night);
+
+                        get_target_temp().done(function(result) {
+                            set_target_to_temp(result);
+                        });
+                    }
+                    else
+                    {
+                        myApp.alert('Please choose a temperature between 5 and 30 degrees.', 'Invalid temperature.');
+                    }
+                }
+            }
+        ]});
 }

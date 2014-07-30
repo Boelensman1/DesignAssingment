@@ -59,8 +59,10 @@ function klok_load(dag)
 
         $('#clock_apply').click(sliders_apply_clicked);
         $('#clock_revert').click(function() {
-            myApp.showIndicator();
-            klok_reload();
+            myApp.confirm('Are sure you want to undo ALL changes you made to this day?', 'Confirmation', function() {
+                myApp.showIndicator();
+                klok_reload();
+            });
         });
 
 
@@ -381,10 +383,11 @@ function touchmove_func(e)
 
 function rotate_pie(degrees)
 {
+
+    degrees_slider = degrees.slice(0);
     $(function() {
         if (sliders > 2 || (sliders == 1 && degrees[0] !== 0 && degrees[0] !== 360))
         {
-            degrees_slider = degrees.slice(0);
             //degrees.shift();
             $('#pie').html('');
             var paper = Raphael("pie");
@@ -588,63 +591,68 @@ function delete_slider(e)
             deg1_id = deg_to_id(deg1);
             deg2_id = null;
         }
+        var r;
         if (sliders == 1)
         {
-            var r = confirm('sure you want to delete the last switches?');
+            myApp.confirm('Are sure you want to delete the last switch?', 'Confirmation', function() {
+                finish_delete(deg1, deg2, deg1_id, deg2_id);
+            });
         }
         else
         {
-            var r = confirm('sure you want to delete ' + to_time(deg1) + '-' + to_time(deg2) + '?');
+            myApp.confirm('Are sure you want to delete the period ' + to_time(deg1) + '-' + to_time(deg2) + '?', 'Confirmation', function() {
+                finish_delete(deg1, deg2, deg1_id, deg2_id);
+            });
         }
-        if (r == true) {
+    }
+}
+function finish_delete(deg1, deg2, deg1_id, deg2_id)
+{
+    $('#add_slider').removeClass('button_disabled');
+    if (sliders == 1)
+    {
+        degreesbyid = new Object();
+        degrees_slider = new Array();
+        $('.rotationSlider').remove();
+        sliders -= 1;
 
-            $('#add_slider').removeClass('button_disabled');
-            if (sliders == 1)
-            {
-                degreesbyid = new Object();
-                degrees_slider = new Array();
-                $('.rotationSlider').remove();
-                sliders -= 1;
-
-            }
-            else
-            {
-                //console.log('---');
-                degrees_slider = new Array();
-                for (var index in degreesbyid) {
-                    if (degreesbyid.hasOwnProperty(index)) {
-                        console.log(index + ' ' + deg1_id + ' ' + deg2_id)
-                        if (index != deg1_id && index != deg2_id)
-                        {
-                            degrees_slider.push(degreesbyid[index]);
-                            //console.log('+ ' + degreesbyid[index]);
-                        }
-                        else
-                        {
-                            //console.log('- ' + degreesbyid[index]);
-                            delete degreesbyid[index];
-                        }
-                    }
-                }
-                //console.log('---');
-                $('#rotationSlider_' + (deg1_id)).remove();
-                $('#rotationSlider_' + (deg2_id)).remove();
-                degrees_slider.sort(function(a, b) {
-                    return a - b
-                });
-
-                if (deg2_id == null)
+    }
+    else
+    {
+        //console.log('---');
+        degrees_slider = new Array();
+        for (var index in degreesbyid) {
+            if (degreesbyid.hasOwnProperty(index)) {
+                console.log(index + ' ' + deg1_id + ' ' + deg2_id)
+                if (index != deg1_id && index != deg2_id)
                 {
-                    sliders -= 1;
+                    degrees_slider.push(degreesbyid[index]);
+                    //console.log('+ ' + degreesbyid[index]);
                 }
                 else
                 {
-                    sliders -= 2;
+                    //console.log('- ' + degreesbyid[index]);
+                    delete degreesbyid[index];
                 }
             }
-            rotate_pie(degrees_slider);
+        }
+        //console.log('---');
+        $('#rotationSlider_' + (deg1_id)).remove();
+        $('#rotationSlider_' + (deg2_id)).remove();
+        degrees_slider.sort(function(a, b) {
+            return a - b
+        });
+
+        if (deg2_id == null)
+        {
+            sliders -= 1;
+        }
+        else
+        {
+            sliders -= 2;
         }
     }
+    rotate_pie(degrees_slider);
 }
 
 

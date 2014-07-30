@@ -80,7 +80,7 @@ get_value('WeekProgramState', 'week_program_state').done(function(result) {
 get_value('day', 'current_day').done(function(result) {
     day = result;
     get_value('time', 'time').done(function(result) {
-        time = get_datetime(day, result);
+        time = get_datetime(day, result, true);
     });
 });
 
@@ -117,34 +117,16 @@ $('#debug_time').change(function() {
 });
 
 $('#set_temps').click(function() {
-
-    myApp.modal({title: 'Set Day/Night Temperatures',
-        text: '<div class="daynight-set-container"><div class="day-set_text">Temp. Day<input type="text" id="temp_input_day" class="modal-prompt-input" value="' + temp_day + '"></div>\n\
-                <div class="night-set_text">Temp. Night<input type="text" id="temp_input_night" class="modal-prompt-input" value="' + temp_night + '"></div></div>',
-        buttons: [
-            {text: 'Cancel'}, {text: 'Ok',
-                onClick: function(modal) {
-                    var tmp_day = $(modal).find('#temp_input_day').val();
-                    var tmp_night = $(modal).find('#temp_input_night').val();
-                    if (tmp_day <= 30 && tmp_day >= 5 && tmp_night <= 30 && tmp_night >= 5)
-                    {
-                        temp_day = tmp_day;
-                        temp_night = tmp_night;
-
-                        set_value('dayTemperature', 'day_temperature', temp_day);
-                        set_value('nightTemperature', 'night_temperature', temp_night);
-
-                        get_target_temp().done(function(result) {
-                            set_target_to_temp(result);
-                        });
-                    }
-                    else
-                    {
-                        myApp.alert('Please choose a temperature between 5 and 30 degrees.', 'Invalid temperature.');
-                    }
-                }
-            }
-        ]})
+    if (program_state == 'off')
+    {
+        myApp.alert('Setting day/night temperatures while in vacation mode. The changes won\'t take effect until vacation mode is switched off.', 'Warning', function() {
+            show_set_temps();
+        });
+    }
+    else
+    {
+        show_set_temps();
+    }
 })
 
 $('#targetTempupArrow').click(function() {
