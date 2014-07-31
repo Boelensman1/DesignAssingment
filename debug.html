@@ -1,0 +1,29 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="left sliding"><a href="#" class="back link back_div"><i class="icon icon-back-blue"></i><span>Back</span></a></div>
+        <div class="center sliding contact-title page_title">Debug</div>
+    </div>
+
+    <div data-page="debug" class="page">
+        <div class="page-content">
+            <div class="content-block">
+                <div id='dev_reload' class='button'>reload</div>
+                <div id='dev_to_first' class='button'>reset to first</div>
+                <div id='cur_time'>time: <span></span></div>
+                <div id='cur_day'>day: <span></span></div>
+                Set to:
+                <form id='debug_settime'>
+                    <select id='debug_day'>
+                        <option value='Monday'>Monday</option>
+                        <option value='Tuesday'>Tuesday</option>
+                        <option value='Wednesday'>Wednesday</option>
+                        <option value='Thursday'>Thursday</option>
+                        <option value='Friday'>Friday</option>
+                        <option value='Saturday'>Saturday</option>
+                        <option value='Sunday'>Sunday</option>
+                    </select>
+                    <input id='debug_time' value='00:00'>
+                </form>
+            </div>
+        </div>
+    </div>
