@@ -1,122 +1,100 @@
-body{
-    overflow-x:hidden;  // disable horizontal scrolling.
-    padding : 0px;
-    margin:0px;
-}
-#pie
-{
-    position: absolute;
-    -webkit-transform: scaleX(-1); /* webkit */
-    /* -webkit-transform: rotate(315deg); */
-    -webkit-transform-origin: center center;
-    width: 270px;
-    height: 270px;
-    /* left: 10px; */
-    opacity: 0.4;
-    /* z-index: 1; */
-}
-#rotationSliderContainer { 
-    position: absolute;
-    width: 270px;
-    height: 270px;
-    border-radius: 160px;
-    /* background: #FF7400; */
-    /* margin: 50px auto; */
-    cursor: default;
-    /* -webkit-tap-highlight-color: initial; */
-}
-.rotationSlider { 
-    position: absolute;
-    height: 50px;
-    width: 50px;
-    background: #A64B00;
-    border-radius: 25px;
-    cursor: pointer;
-    z-index: 11;
-}
-.touchslider_active
-{
-    background: #00d449;
-    z-index:100;
-}
+body, html {
+  color: #ff6400;
+  height: 100%; }
 
-#rotationSlider_1
-{
-    //background: black;
-    //background: none;
-    //border: 3px solid black;
-}
-#rotationSliderDegrees {
-    position: absolute;
-    top: 110px;
+a {
+  text-decoration: none;
+  color: #736963; }
+
+a:hover {
+  text-decoration: underline; }
+
+.container {
+  max-width: 1200px;
+  padding-left: 25px;
+  padding-right: 25px;
+  margin: 0 auto;
+  text-align: center;
+  height: 100%; }
+
+/*
+.watch-section{
+    display: table;
     width: 100%;
-    font-size: 20px;
-    color: #FFF;
+    min-height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.watch-section .watch-inner{
+    display: table-cell;
+    vertical-align: middle;
+}
+.watch-section header{
     text-align: center;
-    -moz-user-select: none; 
-    -khtml-user-select: none; 
-    -webkit-user-select: none; 
-    -o-user-select: none;
-    z-index: 1000;
 }
+.watch-section h2{
+    font-size: 60px;
+    margin-bottom: 70px;
+    margin-top: 0;
+    @media (max-height: 768px){
+        margin-bottom: 40px;
+    }
+    @media (max-height: 600px){
+        margin-bottom: 20px;
+    }
+}
+.watch-section h3{
+    font-size: 36px;
+    margin-bottom: 50px;
+    @media (max-height: 768px){
+        margin-bottom: 40px;
+    }
+    @media (max-height: 600px){
+        margin-bottom: 10px;
+    }
+}
+.watch-section .more{
+    position: absolute;
+    display: block;
+    margin: 0 auto;
+    bottom: 110px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+}
+.watch-section .more .more-text{
+    display: block;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: -30px;
+    color: $brand-color;
+    font-size: 11.5px;
+}
+*/
+.faces .face {
+  background: transparent url("../img/faces.png") top left no-repeat;
+  width: 480px;
+  height: 480px;
+  padding: 0;
+  display: inline-block;
+  position: relative;
+  margin: 10px; }
 
-#clock_background
-{
-    position: absolute;
-    width: 270px;
-    height: 270px;
-    background-size: 100%;
-    background-image:url('../img/faces.png');
-    /* top: 38px; */
+ /*
+.faces .face:before{
+    top: inherit;
+    bottom: -35px;
+    left: 57px;
 }
-/*#add_slider
-{
-    width:40px;
-    height:20px;
-    background-color:#a6a6a6;
+.faces .clock{
+    width: 480px;
+    height: 480px;
     position: absolute;
+    top: 0;
+    left: 0;
 }*/
 
-#clock_date{
-    position:absolute;
-    left: 149px;
-    top: 125px;
-    color: #9d9d9d;
-    width: 76px;
-    text-align: center;
-}
-
-#klok_container
-{
-    position:absolute;
-    left: 25px;
-    /* height: 100px; */
-}
-
-.klok_buttons
-{
-    //display: inline-block !important;
-}
-
-#clock_buttons
-{
-    position:absolute;
-    top: 430px;
-}
-
-#klok_container2
-{
-    height: 296px;
-}
-
-.topslider_inactive
-{
-    background-color: white !important;
-}
-
-.smart-select-list-days
-{
-    margin-top: 0px !important;
-    margin-bottom: 0px !important;
-    /* border-radius: 25px; */
-}
+/*# sourceMappingURL=clock.css.map */
